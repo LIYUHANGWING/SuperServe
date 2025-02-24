@@ -1,0 +1,50 @@
+syntax="proto3";//决定了文档的版本号
+
+
+
+package GamePlayerTest;//命名空间
+
+//消息类
+
+message TestMsg{
+//浮点数
+//=1代表唯一编号
+float testF=1;
+double testD=2;
+//变长编码
+int32 testInt32=3;
+//用于表示负数的整数
+int64 testInt64=4;
+//用于表示负数的整数
+sint32 testSInt32=5;
+sint64 testSInt64=6;
+//无符号变长编码
+ uint32 testUInt32=7;
+ uint64 testULong=8;
+
+ //固定字节数的类型
+ fixed32 testFixed32=9;
+ fixed64 testFixed64=10;
+
+ sfixed32 testSFixed32=11;
+ sfixed64 testSFixed64=12;
+
+ //其他类型
+ bool testBool =13;
+
+ string testStr =14;
+
+ bytes testBytes=15;
+
+ //数组List
+
+
+ repeated int32 listInt =16;
+ //字典Dictionary
+ map<int32,string>testMap=17;
+
+	//枚举的声明
+
+
+
+}

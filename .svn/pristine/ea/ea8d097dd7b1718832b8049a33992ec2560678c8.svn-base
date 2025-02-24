@@ -1,0 +1,32 @@
+server:
+  port: 3307  # 如果您希望应用程序监听 3306 端口，请注意这是 MySQL 通常使用的端口，可能会与数据库服务冲突。
+
+spring:
+  # 数据库连接信息
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/acca
+    username: root
+    password: 123456
+
+
+  # 文件上传的配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+# Mybatis配置
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+# 阿里云OSS配置
+aliyun:
+  oss:
+    endpoint: https://oss-cn-hangzhou.aliyuncs.com
+    accessKeyId: LTAI5tFy53Ua6onmBtwxMzfD
+    accessKeySecret: Bme59tVHO6vRXF99lGIrkSPJafQGgZ
+    bucketName: web-goldwing
+

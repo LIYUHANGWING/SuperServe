@@ -1,0 +1,54 @@
+package com.backofli.service;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.backofli.mapper.UserMapper;
+import com.backofli.pojo.User;
+import com.backofli.pojo.PageBean;
+import com.backofli.service.EmpService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+@Service
+public class UserService {
+
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public User getUserById(String userId) {
+        return userMapper.getUserById(userId);
+    }
+
+    public List<User> getAllUsers() {
+        return userMapper.getAllUsers();
+    }
+
+    public void createUser(User user) {
+        userMapper.insertUser(user);
+    }
+
+    public void updateUser(User user) {
+        userMapper.updateUser(user);
+    }
+
+    public void deleteUser(String userId) {
+        userMapper.deleteUser(userId);
+    }
+
+    // 添加好友
+    public void addFriend(String userId, String friendId) {
+        userMapper.addFriend(userId, friendId);
+    }
+
+    // 获取好友列表
+    public List<User> getFriends(String userId) {
+        System.out.println("Fetching friends for userId: " + userId);
+        List<User> friends = userMapper.getFriends(userId);
+        System.out.println("Found friends: " + friends);
+        return friends;
+    }
+
+}

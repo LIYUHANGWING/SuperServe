@@ -1,0 +1,6 @@
+{
+  "timestamp": "2024-08-30T09:03:51.393+00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "path": "/api/friends/add"
+}
