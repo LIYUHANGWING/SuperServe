@@ -1,6 +1,19 @@
 server:
-  address: 0.0.0.0  # 或者 175.178.100.77
-  port: 80
+  #address: 0.0.0.0  # 或者 175.178.100.77
+  port: 8080
+  tomcat:
+    max-connections: 8192
+    max-threads: 200
+    min-spare-threads: 30
+    connection-timeout: 5000
+    max-http-form-post-size: 2MB
+    max-swallow-size: 2MB
+    max-http-header-size: 8KB
+    uri-encoding: UTF-8
+    compression:
+      enabled: true
+      min-size: 1024
+      mime-types: text/html,text/xml,text/plain,text/css,application/javascript,application/json,application/xml,application/xml+rss,text/javascript
 spring:
   # 数据库连接信息
   datasource:
@@ -8,6 +21,18 @@ spring:
     url: jdbc:mysql://localhost:3306/acca
     username: root
     password: 123456
+    hikari:
+      connection-test-query: SELECT 1
+      connection-timeout: 20000
+      maximum-pool-size: 5
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      auto-commit: true
+      pool-name: HikariCP
+      jdbc-url: jdbc:mysql://localhost:3306/acca?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+  profiles:
+    active: dev
 
   jpa:
     hibernate:
@@ -18,12 +43,17 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 100MB
+      enabled: true
+      location: /tmp
+      file-size-threshold: 2MB
 
 # Mybatis配置
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.backofli.pojo
 
 # 阿里云OSS配置
 aliyun:

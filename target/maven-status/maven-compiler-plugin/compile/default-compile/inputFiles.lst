@@ -1,10 +1,13 @@
+C:\Sever\SuperServe\src\main\java\com\backofli\controller\ChatMessageController.java
 C:\Sever\SuperServe\src\main\java\com\backofli\pojo\Dept.java
+C:\Sever\SuperServe\src\main\java\com\backofli\config\DatabaseInitializer.java
 C:\Sever\SuperServe\src\main\java\com\backofli\service\UserService.java
 C:\Sever\SuperServe\src\main\java\com\backofli\ManagementApplicationOfLI.java
 C:\Sever\SuperServe\src\main\java\com\backofli\controller\RedisController.java
 C:\Sever\SuperServe\src\main\java\com\backofli\controller\UserController.java
 C:\Sever\SuperServe\src\main\java\com\backofli\service\EmpService.java
 C:\Sever\SuperServe\src\main\java\com\backofli\controller\UploadController.java
+C:\Sever\SuperServe\src\main\java\com\backofli\service\ChatMessageService.java
 C:\Sever\SuperServe\src\main\java\com\backofli\utils\AliOSSUtils.java
 C:\Sever\SuperServe\src\main\java\com\backofli\mapper\MessageMapper.java
 C:\Sever\SuperServe\src\main\java\com\backofli\controller\WebSocketServer.java
@@ -20,9 +23,11 @@ C:\Sever\SuperServe\src\main\java\com\backofli\controller\LoginController.java
 C:\Sever\SuperServe\src\main\java\com\backofli\mapper\UserMapper.java
 C:\Sever\SuperServe\src\main\java\com\backofli\utils\JwtUtils.java
 C:\Sever\SuperServe\src\main\java\com\backofli\service\DeptService.java
+C:\Sever\SuperServe\src\main\java\com\backofli\pojo\ChatMessage.java
 C:\Sever\SuperServe\src\main\java\com\backofli\controller\FriendController.java
 C:\Sever\SuperServe\src\main\java\com\backofli\Filter\LoginCheckFilter.java
 C:\Sever\SuperServe\src\main\java\com\backofli\pojo\User.java
+C:\Sever\SuperServe\src\main\java\com\backofli\service\impl\ChatMessageServiceImpl.java
 C:\Sever\SuperServe\src\main\java\com\backofli\service\RedisService.java
 C:\Sever\SuperServe\src\main\java\com\backofli\service\impl\DeptServiceImpl.java
 C:\Sever\SuperServe\src\main\java\com\backofli\Filter\zemoFilter.java
@@ -32,5 +37,6 @@ C:\Sever\SuperServe\src\main\java\com\backofli\pojo\Message.java
 C:\Sever\SuperServe\src\main\java\com\backofli\mapper\DeptMapper.java
 C:\Sever\SuperServe\src\main\java\com\backofli\proto\ProtobufBinaryFileGenerator.java
 C:\Sever\SuperServe\src\main\java\com\backofli\Filter\zbcFilter.java
+C:\Sever\SuperServe\src\main\java\com\backofli\websocket\WebSocketSessionManager.java
 C:\Sever\SuperServe\src\main\java\com\backofli\controller\WebSocketConfig.java
 C:\Sever\SuperServe\src\main\java\GamePlayerTest\Test.java

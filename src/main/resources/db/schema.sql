@@ -1,0 +1,59 @@
+-- 部门表
+CREATE TABLE IF NOT EXISTS dept (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL COMMENT '部门名称',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '部门表';
+
+-- 员工表
+CREATE TABLE IF NOT EXISTS emp (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL COMMENT '用户名',
+    password VARCHAR(100) NOT NULL COMMENT '密码',
+    name VARCHAR(50) NOT NULL COMMENT '姓名',
+    gender TINYINT COMMENT '性别 0:女 1:男',
+    image VARCHAR(300) COMMENT '图像',
+    job VARCHAR(50) COMMENT '职位',
+    entrydate DATE COMMENT '入职日期',
+    dept_id INT COMMENT '部门ID',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    FOREIGN KEY (dept_id) REFERENCES dept(id)
+) COMMENT '员工表';
+
+-- 用户表
+CREATE TABLE IF NOT EXISTS user (
+    user_id VARCHAR(50) PRIMARY KEY COMMENT '用户ID',
+    username VARCHAR(50) NOT NULL COMMENT '用户名',
+    password VARCHAR(100) NOT NULL COMMENT '密码',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '用户表';
+
+-- 消息表
+CREATE TABLE IF NOT EXISTS messages (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    sender_id INT NOT NULL COMMENT '发送者ID',
+    receiver_id INT NOT NULL COMMENT '接收者ID',
+    sender_name VARCHAR(50) NOT NULL COMMENT '发送者名称',
+    receiver_name VARCHAR(50) NOT NULL COMMENT '接收者名称',
+    message_text TEXT NOT NULL COMMENT '消息内容',
+    sent_at DATETIME NOT NULL COMMENT '发送时间',
+    status VARCHAR(20) DEFAULT 'SENT' COMMENT '消息状态',
+    FOREIGN KEY (sender_id) REFERENCES emp(id),
+    FOREIGN KEY (receiver_id) REFERENCES emp(id)
+) COMMENT '消息表';
+
+-- 好友关系表
+CREATE TABLE IF NOT EXISTS friend_relations (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL COMMENT '用户ID',
+    friend_id INT NOT NULL COMMENT '好友ID',
+    status VARCHAR(20) DEFAULT 'PENDING' COMMENT '关系状态',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    FOREIGN KEY (user_id) REFERENCES emp(id),
+    FOREIGN KEY (friend_id) REFERENCES emp(id),
+    UNIQUE KEY unique_friendship (user_id, friend_id)
+) COMMENT '好友关系表'; 

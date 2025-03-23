@@ -1,125 +1,105 @@
 package com.backofli.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
+import com.backofli.pojo.ChatMessage;
+import com.backofli.service.ChatMessageService;
+import com.backofli.websocket.WebSocketSessionManager;
+import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.time.LocalDateTime;
 
 @ServerEndpoint(value = "/apis/websocket/{user_id}")
 @Component
 public class WebSocketServer {
-    private static final Logger L = LoggerFactory.getLogger(WebSocketServer.class);
-
-    // 存储所有用户的会话
-    private static final Map<String, Session> userSessions = new ConcurrentHashMap<>();
-
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketServer.class);
+    
+    private static WebSocketSessionManager sessionManager;
+    private static ChatMessageService chatMessageService;
+    
     private String userId;
-    private PreparedStatement setInteger;
+
+    @Autowired
+    public void setWebSocketSessionManager(WebSocketSessionManager manager) {
+        WebSocketServer.sessionManager = manager;
+    }
+
+    @Autowired
+    public void setChatMessageService(ChatMessageService service) {
+        WebSocketServer.chatMessageService = service;
+    }
 
     @OnOpen
     public void onOpen(Session session, @PathParam("user_id") String userId) {
         this.userId = userId;
-        userSessions.put(userId, session); // 将用户会话加入到Map中
-        System.out.println("用户 " + userId + " 连接建立");
+        sessionManager.addSession(userId, session);
+        logger.info("用户 {} 连接建立", userId);
     }
 
     @OnClose
     public void onClose() {
-        userSessions.remove(userId); // 移除用户会话
-        System.out.println("用户 " + userId + " 连接关闭");
+        sessionManager.removeSession(userId);
+        logger.info("用户 {} 连接关闭", userId);
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
         try {
-            System.out.println("收到用户 " + userId + " 的消息: " + message);
+            logger.info("收到用户 {} 的消息: {}", userId, message);
 
-            // 解析消息，假设消息格式为 "targetUserId:messageContent"
+            // 解析消息，格式为 "targetUserId:messageContent"
             String[] parts = message.split(":", 2);
             if (parts.length != 2) {
                 session.getBasicRemote().sendText("消息格式错误。请使用 'targetUserId:messageContent'");
                 return;
             }
 
-            String targetUserId = parts[0]; // 目标用户ID
-            String messageContent = parts[1]; // 消息内容
+            String targetUserId = parts[0];
+            String messageContent = parts[1];
 
-            // 查找目标用户的会话
-            Session targetSession = userSessions.get(targetUserId);
-            if (targetSession != null && targetSession.isOpen()) {
-                // 发送消息给目标用户
-                targetSession.getBasicRemote().sendText("来自用户 " + userId + " 的消息: " + messageContent);
+            // 创建消息对象
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setSenderId(Integer.parseInt(userId));
+            chatMessage.setReceiverId(Integer.parseInt(targetUserId));
+            chatMessage.setSenderName(userId);
+            chatMessage.setReceiverName(targetUserId);
+            chatMessage.setMessageText(messageContent);
+            chatMessage.setSentAt(LocalDateTime.now());
+            chatMessage.setStatus(ChatMessage.MessageStatus.SENT);
+
+            // 保存消息
+            chatMessageService.saveMessage(chatMessage);
+
+            // 如果目标用户在线，发送消息
+            if (sessionManager.isUserOnline(targetUserId)) {
+                String formattedMessage = String.format("来自用户 %s 的消息: %s", userId, messageContent);
+                sessionManager.sendMessage(targetUserId, formattedMessage);
+                chatMessage.setStatus(ChatMessage.MessageStatus.DELIVERED);
             } else {
                 session.getBasicRemote().sendText("用户 " + targetUserId + " 不在线。");
             }
 
-            // 保存消息到数据库，无论目标用户是否在线
-            insertMessageToDatabase(userId, targetUserId, messageContent);
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("处理消息时发生错误", e);
+            try {
+                session.getBasicRemote().sendText("消息处理失败：" + e.getMessage());
+            } catch (Exception ex) {
+                logger.error("发送错误消息失败", ex);
+            }
         }
     }
 
-    private void insertMessageToDatabase(String senderId, String receiverId, String message) {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
+    @OnError
+    public void onError(Session session, Throwable error) {
+        logger.error("WebSocket错误: ", error);
         try {
-            // 数据库连接信息
-            String url = "jdbc:mysql://localhost:3306/acca";
-            String username = "root";
-            String password = "123456";
-
-            // 建立连接
-            conn = DriverManager.getConnection(url, username, password);
-
-            // 创建SQL语句
-
-            //这里的sender_id,receiver_id根据每个用户独立生成一个id
-            String sql = "INSERT INTO messages (sender_id,receiver_id,sender_name, receiver_name, message_text, sent_at) VALUES (?, ?, ?, ?, ?, ?)";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1,2333);
-            pstmt.setInt(2,2343);
-
-            pstmt.setString(3, senderId);
-            pstmt.setString(4, receiverId);
-            pstmt.setString(5, message);
-            pstmt.setTimestamp(6, new java.sql.Timestamp(new Date().getTime()));
-
-            // 执行插入操作
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // 关闭连接
-            if (pstmt != null) {
-                try {
-                    pstmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+            session.close();
+        } catch (Exception e) {
+            logger.error("关闭WebSocket session失败", e);
         }
     }
 }
